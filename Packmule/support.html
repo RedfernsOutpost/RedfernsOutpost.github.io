@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support · Packmule</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #14100b; color: #ece4d8; font: 17px/1.6 -apple-system, system-ui, "Segoe UI", sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 40px 20px 60px; }
+  h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 20px; }
+  h2 { font-size: 1.15rem; margin: 28px 0 6px; color: #e0a277; }
+  a { color: #e0a277; }
+  code { background: #282017; padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
+  form label { display: block; margin: 0 0 14px; font-weight: 600; }
+  form input, form textarea { display: block; width: 100%; box-sizing: border-box; margin-top: 6px; padding: 12px; font: inherit; font-weight: 400; color: inherit; background: #1e1812; border: 1.5px solid #5a4632; border-radius: 10px; }
+  form button { min-height: 44px; padding: 0 22px; font: inherit; font-weight: 700; color: #14100b; background: #e0a277; border: 0; border-radius: 10px; cursor: pointer; }
+  form button:disabled { opacity: .6; cursor: default; }
+  .hp { position: absolute; left: -9999px; }
+  .status { min-height: 1.6em; margin: 12px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Packmule · Support</h1>
+  <p>Packmule is a free file mule for iPhone: SMB shares, FTP and SFTP servers and Jellyfin, at home or over a VPN, plus a built in FTP server so your computer can reach the phone.</p>
+
+  <h2>What can Packmule connect to?</h2>
+  <p>Windows shares, NAS boxes and Samba servers over SMB, any FTP server, Linux machines and anything else running SSH over SFTP, and Jellyfin media servers. Tap Add server and pick the kind. Pasting a Windows path such as <code>\\192.168.1.20\media</code> into Host fills in the share for you.</p>
+
+  <h2>It says the server refused the sign in</h2>
+  <p>Check the user name spelling first. A Samba server quietly treats an unknown user as a guest, and a share that doesn't allow guests then refuses. The password is the one set on the server with <code>smbpasswd</code>, which isn't always your login password. If your computer opens the share, it is usually signed in with a saved user name you can copy.</p>
+
+  <h2>Can I reach my home server when I'm away?</h2>
+  <p>Yes, over a VPN. Turn on WireGuard or Tailscale in their own apps, then use the tunnel address in Packmule. If the packets get there, the mule can too.</p>
+
+  <h2>Where do downloads go?</h2>
+  <p>Into the Packmule folder in the Files app: On My iPhone, then Packmule, then Downloads. Settings in Packmule has a shortcut that opens it.</p>
+
+  <h2>Why do transfers stop when I lock my phone?</h2>
+  <p>iOS pauses apps shortly after they leave the screen. Packmule picks up where it stopped when you come back, and keeps your queue across a relaunch. Turn on Keep the screen awake while hauling in Settings to keep a long transfer moving.</p>
+
+  <h2>A file with the same name is already on the server</h2>
+  <p>Packmule asks once for the whole batch: Keep both gives the new copy a number, Replace overwrites the copy on the server, and Skip leaves those files out. It never overwrites without asking.</p>
+
+  <h2>It says my SFTP server has a new identity</h2>
+  <p>Packmule remembers each SSH server's host key the first time it connects. If the key changes, it stops before sending your password. That's expected after reinstalling or rebuilding the server. If you didn't, choose Stay away: something may be pretending to be your server.</p>
+
+  <h2>How do I copy files from my iPhone to my computer?</h2>
+  <p>Open Host this iPhone and tap Start serving. Packmule shows an address such as <code>ftp://192.168.1.23:2121</code>. Type it into the Windows Explorer address bar, Finder's Connect to Server, or any FTP app on the same WiFi or VPN. Add a user and password to keep others out, and keep Packmule open while hosting.</p>
+
+  <h2>Is it really free?</h2>
+  <p>Yes. Every feature is free with no limits: no subscription, no unlock, no ads.</p>
+
+  <h2>Does Packmule collect any data?</h2>
+  <p>No. There are no accounts, ads or analytics, and files only move between your iPhone and the servers you add. Read the <a href="privacy.html">privacy policy</a>.</p>
+
+  <h2 id="contact">Contact</h2>
+  <p>Something not working, or an idea for the mule? Write here and it goes straight to the developer.</p>
+  <form id="contact-form" hidden>
+    <label>Your email <input type="email" name="email" required autocomplete="email"></label>
+    <label>Message <textarea name="message" rows="6" required></textarea></label>
+    <input type="hidden" name="_subject" value="Packmule support">
+    <input type="hidden" name="app" value="Packmule">
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+    <button type="submit">Send</button>
+    <p class="status" role="status" aria-live="polite"></p>
+  </form>
+  <p id="contact-fallback">Turn on JavaScript to use the form, or leave a note on the App Store listing.</p>
+</main>
+<script>
+  // Same Formspree form as the other Outpost app pages; the _subject and app
+  // fields mark these messages as Packmule's. The receiving email lives on the
+  // Formspree account and never appears on this page or in this repo.
+  const FORM_ID = 'xaeeroge';
+  const form = document.getElementById('contact-form');
+  if (FORM_ID) {
+    form.hidden = false;
+    document.getElementById('contact-fallback').textContent = 'You can also leave a note on the App Store listing.';
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const status = form.querySelector('.status'), btn = form.querySelector('button');
+      btn.disabled = true; status.textContent = 'Sending…';
+      try {
+        const r = await fetch('https://formspree.io/f/' + FORM_ID, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!r.ok) throw new Error(r.status);
+        form.reset(); status.textContent = 'Thanks! Your message was sent.';
+      } catch {
+        status.textContent = "It didn't send. Check your connection and try again.";
+      } finally { btn.disabled = false; }
+    });
+  }
+</script>
+</body>
+</html>
